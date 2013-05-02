@@ -15,8 +15,9 @@
 		var $arrayOfElapsedTimes = new Array();
 		var str = "<ul id = 'projectsList' class = 'page'>";
 		
-		setTimeCardDeleteNum = function(num){
+		setTimeCardDeleteNum = function(num, projectNumber){
 			timeCardDeleteNum = num;
+			currentProject = projectNumber;
 		}
 		
 		//var str = "";
@@ -139,6 +140,7 @@
 					tempDescription = row.timeCardDescription;
 					tempElapsedTime = row.elapsedTime;
 					tempRate = row.rate;
+					
 					//alert('temp'+row.timeCardDescription[0]);
 					//alert(tempDescription.length);
 					tempRate = tempRate/3600;//rate i $ per second.
@@ -147,7 +149,7 @@
 						
 						if(tempDescription[i] != undefined && tempElapsedTime[i] != 0){
 							date = getDays(tempElapsedTime[i]);
-							HTML_Code = '<div class="blackPage"><h3>Time Worked: '+date+'. Earned: $'+(Math.round((tempRate*tempElapsedTime[i]*100))/100)+'</h3><i class="icon-edit t-card edit"></i><a href="#deleteTimecard"><i class="icon-trash t-card trash" onclick="setTimeCardDeleteNum('+i+')"></i></a><br><br><h5>Description: </h5><p>'+tempDescription[i]+'</p></div>';
+							HTML_Code = '<div class="blackPage"><h3>Time Worked: '+date+'. Earned: $'+(Math.round((tempRate*tempElapsedTime[i]*100))/100)+'</h3><i class="icon-edit t-card edit"></i><a href="#deleteTimecard"><i class="icon-trash t-card trash" onclick="setTimeCardDeleteNum('+i+','+rowNumber+')"></i></a><br><br><h5>Description: </h5><p>'+tempDescription[i]+'</p></div>';
 							HTML_Str += HTML_Code;
 						}
 						
@@ -278,7 +280,7 @@
 			);//end update
 			cat.commit();
 			clearTimecard();
-			changeProjectPage(currentProject+1);//not sure about this +1
+			changeProjectPage(currentProject);//not sure about this +1
 		});
 		
 		$('.x').click(function(){//Person discards timecard without saving;
@@ -286,25 +288,23 @@
 		});
 		
 		$('.deleteTimecard').click(function(){
-			//alert(timeCardDeleteNum);
 			cat.update("projects",
 				function(row) {
-					if(row.ID == (timeCardDeleteNum+1)){
+					if(row.ID == currentProject+1){
 						return true;
 					}else{
 						return false;
 					}//end if else
 				},//end function(finds row to edit);
 				function(row){
-					//row.elapsedTime += elapsedTime;
-					//row.timeStart = 0;
 					row.elapsedTime[timeCardDeleteNum] = 0
 					row.timeCardDescription[timeCardDeleteNum] = "";
 					return row;
 				}//end function (Makes changes);		
 			);//end update
 			cat.commit();
-			changeProjectPage(timeCardDeleteNum);
+			changeProjectPage(currentProject);
+			location.href = '#project';
 		});
 		
 		clearTimecard = function(){
