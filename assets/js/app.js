@@ -1,5 +1,9 @@
 ;(function($, window) {
 	$(document).ready(function(){
+		var currentProject = null;
+		var clock = $('.clock').FlipClock(3600);
+		var timeCardDeleteNum;
+	
 		//var jQT;
 		var counter = 0;
 		var addedProjects = 0;
@@ -7,29 +11,33 @@
 		
 		
 		var $arrayOfProjects = new Array();
-		var str = "<ul class = 'page'>"
+		var $arrayOfDescriptions = new Array();
+		var $arrayOfElapsedTimes = new Array();
+		var str = "<ul id = 'projectsList' class = 'page'>";
 		
+		setTimeCardDeleteNum = function(num){
+			timeCardDeleteNum = num;
+		}
+		
+		//var str = "";
 		updateHome = function(){
-			//console.log(counter);
-			//console.log(addedProjects);
 			if(counter != addedProjects || addedProjects == 0){
 				
 				if(!cat.tableExists('projects')) {	//If a table does not exist then:		
-							cat.createTable("projects", ["title", "rate", "description"]);
+							cat.createTable("projects", ["title", "rate", "description","timeStart", "elapsedTime", "timeCardDescription"]);
 							cat.commit();
-							//alert('here');
 							document.getElementById("listOfProjects").innerHTML = "<h1>No projects have been started.</h1>";
 							temp = '<a href="#newProject"><button type="button">Start a New Project!</button></a>';
 							$('#listOfProjects').append(temp);
 				}else{
 					counter = 0;
 					addedProjects =0;
-					str = "<ul class = 'page'>"
+					str = "<ul id = 'projectsList' class = 'page'>";
+					//var str = "";
 					document.getElementById("listOfProjects").innerHTML = "";//clear out old list frome home.
 					cat.query("projects", function(row){
 						var name = row.title;
-						//console.log(name);
-						HTML_Line = '<li><a href="#project'+counter+'">'+name+'</a></li>';
+						HTML_Line = '<li class="listElement"><a class="listElement" onclick="changeProjectPage('+counter+')" href="#project">'+name+'</a></li>';
 						str += HTML_Line;
 						addedProjects++;
 						counter++;
@@ -48,8 +56,114 @@
 		
 		}
 		
+		getDays = function(timeInSeconds){
+			
+			var days = Math.floor(timeInSeconds/86400);
+			var remainder = ((timeInSeconds/86400) - days);
+			var formattedDate = "";
+			
+			if((days > 1 || days < 1) && days != 0){
+				formattedDate = days+" days "+getHours(remainder);
+			}else if(days == 1){
+				formattedDate = days+" day "+getHours(remainder);
+			}else if(days <= 0){
+				formattedDate = getHours(remainder);
+			}
+			
+			
+			return formattedDate;
+		}
 		
+		getHours = function(timeInDays){
+			var hours = Math.floor(timeInDays*24);
+			var remainder = ((timeInDays*24)-hours);
+			var formattedDate = "";
+			
+			if((hours > 1 || hours < 1) && hours != 0){
+					formattedDate = hours+" hours "+getMinutes(remainder);
+			}else if(hours == 1){
+				formattedDate = hours+" hour "+getMinutes(remainder);
+			}else if(hours <= 0){
+				formattedDate = getMinutes(remainder);
+			}
+			return formattedDate;
+		}
 		
+		getMinutes = function(timeInHours){
+			var minutes = Math.floor(timeInHours*60);
+			var remainder = ((timeInHours*60)-minutes);
+			var formattedDate = "";
+			
+			if((minutes > 1 || minutes < 1) && minutes != 0){
+				formattedDate = minutes+" minutes "+getSeconds(remainder);
+			}else if(minutes == 1){
+				formattedDate = minute+" minute "+getSeconds(remainder);
+			}else if(minutes <= 0){
+				formattedDate = getSeconds(remainder);
+			}
+			
+			return formattedDate;
+		}
+		
+		getSeconds = function(timeInHours){	
+			var seconds = Math.floor(timeInHours*60);
+			var formattedDate = "";
+			if(seconds != 1){
+				formattedDate = seconds+" seconds";
+			}else{
+				formattedDate = seconds+" second";
+			}
+			
+			return formattedDate;
+		}
+		
+		changeProjectPage = function(rowNumber){
+			tempCounter = 0;
+			currentProject = rowNumber;
+			var HTML_Str;
+			var HTML_Code;
+			var tempDescription = [];
+			var tempElapsedTime = [];
+			var i;
+			var tempRate;
+			var date;
+			i=0;
+			tempCounter = 0;
+			HTML_Str = "";
+			//alert(rowNumber);
+			
+			
+			cat.query("projects", function(row){
+				if(tempCounter==rowNumber){
+					tempName = row.title;
+					tempDescription = row.timeCardDescription;
+					tempElapsedTime = row.elapsedTime;
+					tempRate = row.rate;
+					//alert('temp'+row.timeCardDescription[0]);
+					//alert(tempDescription.length);
+					tempRate = tempRate/3600;//rate i $ per second.
+					
+					for(i=0;i<=(tempDescription.length);i++){
+						
+						if(tempDescription[i] != undefined && tempElapsedTime[i] != 0){
+							date = getDays(tempElapsedTime[i]);
+							HTML_Code = '<div class="blackPage"><h3>Time Worked: '+date+'. Earned: $'+(Math.round((tempRate*tempElapsedTime[i]*100))/100)+'</h3><i class="icon-edit t-card edit"></i><a href="#deleteTimecard"><i class="icon-trash t-card trash" onclick="setTimeCardDeleteNum('+i+')"></i></a><br><br><h5>Description: </h5><p>'+tempDescription[i]+'</p></div>';
+							HTML_Str += HTML_Code;
+						}
+						
+						//alert(tempDescription[i]);
+					}
+				}
+				tempCounter++;
+			});//end query
+			document.getElementById("timecards").innerHTML ="";
+			//alert('here');
+			//alert(HTML_Str);
+			
+			$('#timecards').append(HTML_Str);
+			document.getElementById("projectTitle").innerHTML = tempName;
+			
+		}
 		
 		$('#settings').submit(function(e){
 			var tf = true;
@@ -61,18 +175,23 @@
 			if($projectRate.val() == ""){
 				$projectRate.val(0);
 			}
+			
 			if($projectName.val() == ""){
 				alert('You must name your project!');
 				tf = false;
 			}
-			console.log(cat.query("projects", {title: $projectName.val()}));
-			//console.log($projectRate.val());
+			
+			if(cat.query("projects", {title: $projectName.val()}) != ""){
+				alert('There is already a project with this name. Please delete that project or rename this one!');
+				tf = false;
+			}
+			
 			
 		
 			e.preventDefault();
 			if(tf == true){
-
-				cat.insert("projects", {title: $projectName.val(), rate: $projectRate.val(), description: $projectDescription.val()});
+				
+				cat.insert("projects", {title: $projectName.val(), rate: $projectRate.val(), description: $projectDescription.val(), timeStart: 0, elapsedTime: $arrayOfElapsedTimes, timeCardDescription: $arrayOfDescriptions});
 				cat.commit();
 				counter++;
 				$('#name').val('');
@@ -82,6 +201,116 @@
 				jQT.goTo('#home', 'slideup');
 			}
 		});
+		
+		$('#timeStartStop').click(function(e){
+			buttonText = document.getElementById("timeStartStop").innerHTML;
+			
+			if(buttonText == "Start"){
+				document.getElementById("timeStartStop").innerHTML = "Stop";
+				var seconds = new Date().getTime() / 1000;
+				var elapsedTime;
+				var timeStart;
+				var arrayPosition;
+				var $tempArray = [];
+				
+				cat.update("projects",
+					function(row) {
+						if(row.ID == (currentProject+1)){
+							return true;
+						}else{
+							return false;
+						}
+					},
+					function(row){
+						row.timeStart = seconds;
+						return row;
+					}
+				);
+				
+			}else{
+				$(".page.timecard").slideToggle("slow");
+				
+			
+				document.getElementById("timeStartStop").innerHTML = "Start";
+			}
+			
+		});
+		
+		$('#saveTimecard').submit(function(e){
+			var $thisTimecard     		= $(this);
+			var $timecardDescription	= $thisTimecard.find('#timecardDescription');
+			var elapsedTime;
+			var $tempElapsedArray		= new Array();
+			var $tempDescriptionArray	= new Array();
+			var tempDescription;
+			
+			
+			cat.query("projects", function(row){
+					if(row.ID == (currentProject+1)){
+						timeStart = row.timeStart;
+						$tempElapsedArray = [];//ensures array is empty
+						$tempDescriptionArray = [];
+						$tempElapsedArray = row.elapsedTime;
+						$tempDescriptionArray = row.timeCardDescription;
+					}//end if
+			});//end query Sets function variables = to row being edited;
+			var seconds = new Date().getTime() / 1000;
+			
+			elapsedTime = seconds-timeStart;
+			$tempElapsedArray.push(elapsedTime);
+			$tempDescriptionArray.push($timecardDescription.val());
+			
+			cat.update("projects",
+				function(row) {
+					if(row.ID == (currentProject+1)){
+						return true;
+					}else{
+						return false;
+					}//end if else
+				},//end function(finds row to edit);
+				function(row){
+					//row.elapsedTime += elapsedTime;
+					row.timeStart = 0;
+					row.elapsedTime = $tempElapsedArray;
+					row.timeCardDescription = $tempDescriptionArray;
+					return row;
+				}//end function (Makes changes);		
+			);//end update
+			cat.commit();
+			clearTimecard();
+			changeProjectPage(currentProject+1);//not sure about this +1
+		});
+		
+		$('.x').click(function(){//Person discards timecard without saving;
+			clearTimecard();
+		});
+		
+		$('.deleteTimecard').click(function(){
+			//alert(timeCardDeleteNum);
+			cat.update("projects",
+				function(row) {
+					if(row.ID == (timeCardDeleteNum+1)){
+						return true;
+					}else{
+						return false;
+					}//end if else
+				},//end function(finds row to edit);
+				function(row){
+					//row.elapsedTime += elapsedTime;
+					//row.timeStart = 0;
+					row.elapsedTime[timeCardDeleteNum] = 0
+					row.timeCardDescription[timeCardDeleteNum] = "";
+					return row;
+				}//end function (Makes changes);		
+			);//end update
+			cat.commit();
+			changeProjectPage(timeCardDeleteNum);
+		});
+		
+		clearTimecard = function(){
+			$(".page.timecard").slideToggle("slow");//hide menu
+			$('#timecardDescription').val('');//clears timecard
+		};
 		
 		var tf = true;
 		
@@ -93,221 +322,15 @@
 			});
 
 		});
+		
+		
+		
 		//Delete later - for testing
 		$('#drop').click(function(e) {
 			cat.drop();
 			alert('database has been purged. Please refresh');
 		});
-		/*
-		$('#home').bind('pageAnimationEnd', function(event, info) {
-			if (info.direction == 'in') {
-				$("#map").show();
-				
-				google.maps.event.trigger(map.map, 'resize');
-				
-				map.map.setZoom(map.mapOptions.zoom);
-				map.map.fitBounds(map.bounds);
-						
-			}
-			return false;
-		});
-
-		var map = $('#map').MobileMap({
-			mapOptions: {
-				center: new google.maps.LatLng(39.76, -86.15)//Coordinates = Indianapolis
-			},
-			callback: {
-				newMarker: function(marker, lat, lng, id) {
-					google.maps.event.addListener(marker, 'click', function() {
-						
-						map.editIndex = id;
-						
-						var row     = map.db.query('markers', function(row) {
-							console.log(row.ID+' == '+(id));
-							if(row.ID == id) {
-								return true;
-							}
-							return false;
-						});
-						
-						row = row[0];
-						var $name   = $('#editLoc').find('#locationName');
-						var $street = $('#editLoc').find('#streetAddress');
-						var $city   = $('#editLoc').find('#city');
-						var $state  = $('#editLoc').find('#state');
-						var $zip    = $('#editLoc').find('#zipCode');
-										
-						$name.val(row.name);
-						$street.val(row.street);
-						$city.val(row.city);
-						$state.val(row.state);	
-						$zip.val(row.zipcode);
-						
-						jQT.goTo('#updateLocation', 'slideup');		
-						
-					});
-				}
-			}
-		});
 		
-		$('#editSettings').submit(function(e) {
-			
-			var $thisSetting      = $(this);
-			var $icon   = $thisSetting.find('#iconUrl');
-			var $sizeX = $thisSetting.find('#iconSizeWidth');
-			var $sizeY = $thisSetting.find('#iconSizeHeight');
-			var $type = $thisSetting.find('#mapType');
-			var $color = $thisSetting.find('#color')
-			
-			var settings = [
-				$icon.val(),
-				$sizeX.val(),
-				$sizeY.val(),
-				$type.val(),
-				$color.val()
-			];
-			
-			
-			var object = {
-				icon: $icon.val(),
-				iconSizeX: $sizeX.val(),
-				iconSizeY: $sizeY.val(),
-				mapType: $type.val(),
-				color: $color.val()
-			}
-			//Send information to mobileMap to be used
-			map.editSettings($icon.val(), $sizeX.val(), $sizeY.val(), $type.val(), $color.val());
-			
-			e.preventDefault();
-		});
-		
-		$('#search').submit(function(e) {
-			var $thisLocation      = $(this);
-			var $street   = $thisLocation.find('#search');
-			var $miles = $thisLocation.find('#distance');
-			var address = [
-				$street.val()
-			];
-			
-			
-			var object = {
-				street: $street.val()
-			}
-			
-			//Send information to mobileMap to be used
-			map.search($street.val(), $miles.val()	 ,function() {
-				$street.val('');
-			});
-			
-			$('#clear').removeClass('hidden');
-			
-			e.preventDefault();
-		});
-		
-		//Delete later - for testing
-		$('#drop').click(function(e) {
-			map.drop();
-		});
-		
-		$('#clear').click(function(e) {
-			map.removeCircle();
-			
-			$('#clear').addClass('hidden');
-		});
-		
-		$('#delete-location').submit(function(e) {
-			
-			tf = false;
-			
-			var id = map.editIndex;
-			
-			map.deleteMarker(id);
-			
-			window.location = "#home";
-			
-			return false;
-		});
-		
-		$('#newLoc').submit(function(e) {
-			var $thisLocation      = $(this);
-			var $name   = $thisLocation.find('#locationName');
-			var $street = $thisLocation.find('#streetAddress');
-			var $city   = $thisLocation.find('#city');
-			var $state  = $thisLocation.find('#state');
-			var $zip    = $thisLocation.find('#zipCode');
-			
-			var address = [
-				$street.val(),
-				$city.val(),
-				$state.val(),
-				$zip.val()
-			];
-			
-			var object = {
-				name: $name.val(),
-				address: address.join(' '),
-				street: $street.val(),
-				city: $city.val(),
-				state: $state.val(),
-				zipcode: $zip.val()
-			}
-			
-			//Send information to mobileMap to be used
-			map.addMarker(object, function() {
-				map.home();
-				$name.val('');
-				$street.val('');
-				$city.val('');
-				$state.val('');
-				$zip.val('');
-			});
-			
-			e.preventDefault();
-			
-			
-			return false;
-		});
-		
-		$('#editLoc').submit(function(e) {
-			
-			var $thisLocation      = $(this);
-			var $name   = $thisLocation.find('#locationName');
-			var $street = $thisLocation.find('#streetAddress');
-			var $city   = $thisLocation.find('#city');
-			var $state  = $thisLocation.find('#state');
-			var $zip    = $thisLocation.find('#zipCode');
-			
-			var address = [
-				$street.val(),
-				$city.val(),
-				$state.val(),
-				$zip.val()
-			];
-			
-			var object = {
-				name: $name.val(),
-				address: address.join(' '),
-				street: $street.val(),
-				city: $city.val(),
-				state: $state.val(),
-				zipcode: $zip.val()
-			}
-			
-			map.editMarker(object, function() {
-				map.home();
-				$name.val('');
-				$street.val('');
-				$city.val('');
-				$state.val('');
-				$zip.val('');
-			});
-			
-			e.preventDefault();
-		
-			window.location = "#home";
-			
-			return false;
-		});*/
 		updateHome();
 	});
 }(jQuery, this));

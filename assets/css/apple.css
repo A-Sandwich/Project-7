@@ -1520,8 +1520,8 @@ body {
 }
 /* line 229, ../scss/include/_skeleton.scss */
 #jqt ul {
-  padding: 0;
-  margin: 5px 10px 10px 10px;
+ /* padding: 0;
+  margin: 5px 10px 10px 10px;*/
   -webkit-margin-collapse: separate;
 }
 /* line 231, ../scss/include/_skeleton.scss */
@@ -1529,7 +1529,7 @@ body {
   background-color: white;
   color: gray;
   text-shadow: white 0 1px 0;
-  border: 1px solid #d9d9d9;
+  /*border: 1px solid #d9d9d9;*/
   font: bold 18px "Helvetica Neue", Helvetica;
 }
 /* line 240, ../scss/include/_skeleton.scss */
@@ -1538,12 +1538,12 @@ body {
 }
 /* line 246, ../scss/include/_skeleton.scss */
 #jqt ul li {
-  border-top: 1px solid #f2f2f2;
+  /*border-top: 1px solid #f2f2f2;
   list-style-type: none;
   overflow: hidden;
   padding: 10px;
   -webkit-transform: translate3d(0, 0, 0);
-  /* expensive way to avoid flickr */
+   expensive way to avoid flickr */
 }
 /* line 253, ../scss/include/_skeleton.scss */
 #jqt ul li a {

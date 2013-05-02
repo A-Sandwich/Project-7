@@ -6,12 +6,38 @@ h2{
 	text-align:center;
 }
 
+h3{
+	color: white;
+	float: left;
+}
+
+.x{
+	
+	float:right;
+
+}
+
+.x:hover{
+	opacity: 0.5;
+}
+
+.t-card{
+	float: right;
+}
+
+.t-card:hover{
+	opacity: 0.5;
+}
+
 * {
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
 }
 
+.page.timecard{
+	display: none;
+}
 
 .inline{
 	-webkit-box-sizing: border-box;
@@ -84,6 +110,58 @@ h2{
 	width: 100%;
 	margin: 0 0 10px;
 }
+
+.blackPage {
+	-moz-box-shadow: rgba(255, 255, 255, 0.15) 0 1px 0;
+	-webkit-box-shadow: rgba(255, 255, 255, 0.15) 0 1px 0;
+	box-shadow: rgba(255, 255, 255, 0.15) 0 1px 0;
+	border: 1px solid #52657f;
+	padding: 10px;
+	background: black;
+	color: white;
+	margin: 10px;
+	border-radius: 8px;
+	opacity: 0.6;
+}
+
+.blackPage:hover{
+	opacity:1;
+}
+
+.blackPage img {
+	width: 100%;
+}
+
+.blackPage p {
+	margin-bottom: 10px;
+	font-size: 14px;
+	line-height: 1.4em;
+}
+
+.blackPage blockquote {
+	display: block;
+	clear: left;
+	font-style: italic;
+	font-family: Georgia;
+	line-height: 18px;
+	border-left: 4px solid rgb(225, 225, 225);
+	padding-left: 20px;
+	margin: 25px;
+}
+.blackPage p:last-child {
+	margin-bottom: 0;
+}
+
+.blackPage form input,
+.blackPage form textarea {
+	display: block;
+	padding: 7px 10px;
+	font-size: 14px;
+	margin-bottom: 10px;
+	width: 100%;
+	margin: 0 0 10px;
+}
+
 
 #jqt .scroll button,
 #jqt .page button {
