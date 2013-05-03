@@ -18,7 +18,6 @@
 		updateEditProject = function(){
 			cat.query("projects", function(row){
 					if(row.ID == (currentProject+1)){
-						//alert('rate'+row.rate);
 						$('#editProjectRate').val(row.rate);
 						$('#editProjectDescription').val(row.description);
 						$('#editProjectName').val(row.title);
@@ -216,9 +215,13 @@
 					tempDescription = row.timeCardDescription;
 					tempElapsedTime = row.elapsedTime;
 					tempRate = row.rate;
+					console.log('Name: '+row.title+' timeStart '+row.timeStart);
+					if(row.timeStart == 0 || row.timeStart == undefined){
+						document.getElementById("timeStartStop").innerHTML = "Start";
+					}else{
+						document.getElementById("timeStartStop").innerHTML = "Stop";
+					}
 					
-					//alert('temp'+row.timeCardDescription[0]);
-					//alert(tempDescription.length);
 					tempRate = tempRate/3600;//rate i $ per second.
 					
 					for(i=0;i<=(tempDescription.length);i++){
@@ -305,10 +308,11 @@
 						return row;
 					}
 				);
+				cat.commit();
 				
 			}else{
-				$(".page.timecard").slideToggle("slow");
 				
+				$(".page.timecard").slideToggle("slow");
 			
 				document.getElementById("timeStartStop").innerHTML = "Start";
 			}
@@ -361,6 +365,20 @@
 		});
 		
 		$('.x').click(function(){//Person discards timecard without saving;
+			cat.update("projects",
+				function(row) {
+					if(row.ID == (currentProject+1)){
+						return true;
+					}else{
+						return false;
+					}//end if else
+				},//end function(finds row to edit);
+				function(row){
+					row.timeStart = 0;
+					return row;
+				}//end function (Makes changes);		
+			);//end update
+			cat.commit();
 			clearTimecard();
 		});
 		
