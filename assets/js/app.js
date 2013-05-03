@@ -15,6 +15,45 @@
 		var $arrayOfElapsedTimes = new Array();
 		var str = "<ul id = 'projectsList' class = 'page'>";
 		
+		updateEditProject = function(){
+			cat.query("projects", function(row){
+					if(row.ID == (currentProject+1)){
+						//alert('rate'+row.rate);
+						$('#editProjectRate').val(row.rate);
+						$('#editProjectDescription').val(row.description);
+						$('#editProjectName').val(row.title);
+					}//end if
+			});//end query
+		}//end updateEditProject;
+		
+		$('#editProject').submit(function(e){
+			var $thisEdit			= $(this);
+			var $projectRate		= $thisEdit.find('#editProjectRate');
+			var $projectDescription = $thisEdit.find('#editProjectDescription');
+			var $projectName 		= $thisEdit.find('#editProjectName');
+			
+			cat.update("projects",
+				function(row) {
+					if(row.ID == currentProject+1){
+						return true;
+					}else{
+						return false;
+					}//end if else
+				},//end function(finds row to edit);
+				function(row){
+					row.title = $projectName.val();
+					row.rate  = $projectRate.val();
+					row.description = $projectDescription.val();
+					return row;
+				}//end function (Makes changes);		
+			);//end update
+			cat.commit();
+			changeProjectPage(currentProject);
+			updateHome();
+			location.href = '#project';
+		});
+		
+		
 		$('#editTimecard').submit(function(e){
 			var $thisEdit				= $(this);
 			var $eTD					= $thisEdit.find('#editTimecardDescription');
@@ -202,6 +241,7 @@
 			$('#timecards').append(HTML_Str);
 			document.getElementById("projectTitle").innerHTML = tempName;
 			
+			updateEditProject();
 		}
 		
 		$('#settings').submit(function(e){

@@ -31,7 +31,7 @@
                 <header class="toolbar">
                     <h1>Project 7</h1>
                     <a class="button slideup" id="infoButton" href="#newProject">+</a>
-					<a class="leftButton button slideup"  href="#"><i class="icon-cog"></i></a>
+					<!--<a class="leftButton button slideup"  href="#"><i class="icon-cog"></i></a>-->
                 </header>
 				
 				<div id="listOfProjects" class = "page">
@@ -72,6 +72,7 @@
                
                 <header class="toolbar">
                     <h1 id="projectTitle">Project</h1>
+					<a class="button slideup" id="edit" href="#editProject">Edit</a>
                     <a class="back" href="#home">Home</a>
                 </header>
                 <div class="scroll">
@@ -122,10 +123,35 @@
                 	
 					<div class = "page">
 						<form id='editTimecard'>
-							<label for="timecardDescription">Project Description</label><br>
+							<label for="editTimecardDescription">Project Description</label><br>
 							<textarea name="description" id="editTimecardDescription" class="active"></textarea>
-							<label for="name">Time Worked(In Seconds)</label><br>
+							<label for="timeWorked">Time Worked(In Seconds)</label><br>
 							<input type="text" name="timeWorked" value="" placeholder="1000" id="timeWorked" class="input" />
+							
+							<button type="submit" class="submit greenButton saveTimecard">Save Edits</button>
+						</form>
+						
+					</div>
+					
+                </div>
+            </div>
+			
+			<div id="editProject">
+               
+                <header class="toolbar">
+                    <h1 id="projectTitle">Edit Project</h1>
+                    <a class="back" href="#Project">Home</a>
+                </header>
+                <div class="scroll">
+                	
+					<div class = "page">
+						<form id='editProject'>
+							<label for="editName">Rate</label><br>
+							<input type="text" name="editProjectName" value="" placeholder="Bill" id="editProjectName" class="input" />
+							<label for="editProjectDescription">Project Description</label><br>
+							<textarea name="description" id="editProjectDescription" class="active"></textarea>
+							<label for="editRate">Rate</label><br>
+							<input type="number" name="editProjectRate" value="" placeholder="1000" id="editProjectRate" class="input" />
 							
 							<button type="submit" class="submit greenButton saveTimecard">Save Edits</button>
 						</form>
