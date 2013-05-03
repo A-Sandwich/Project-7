@@ -1357,10 +1357,12 @@ body {
   -webkit-border-radius: 5px;
   border-radius: 5px;
   background-image: none;
-  background-color: #50709a;
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #7c97bb), color-stop(50%, #5a7caa), color-stop(51%, #50709a), color-stop(100%, #476489));
+  /*background-color: #50709a;*/
+  background: url('Textures/grey_wash_wall.png');
+ /* background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #7c97bb), color-stop(50%, #5a7caa), color-stop(51%, #50709a), color-stop(100%, #476489));
   background-image: -webkit-linear-gradient(top, #7c97bb, #5a7caa 50%, #50709a 51%, #476489);
   background-image: linear-gradient(top, #7c97bb, #5a7caa 50%, #50709a 51%, #476489);
+*/
 }
 /* line 107, ../scss/include/_skeleton.scss */
 #jqt .button.active, #jqt .back.active, #jqt .cancel.active, #jqt .add.active {
@@ -1393,11 +1395,12 @@ body {
   -webkit-transform-origin: 0 0;
   transform-origin: 0 0;
   background-image: none;
-  background-color: #50709a;
+  background: url('Textures/grey_wash_wall.png');
+  /*background-color: #50709a;
   background-image: -webkit-gradient(linear, 0% 0%, 100% 100%, color-stop(0%, #7c97bb), color-stop(50%, #5a7caa), color-stop(51%, #50709a), color-stop(100%, #476489));
   background-image: -webkit-linear-gradient(top left, #7c97bb, #5a7caa 50%, #50709a 51%, #476489);
   background-image: linear-gradient(top left, #7c97bb, #5a7caa 50%, #50709a 51%, #476489);
-  background-size: 100% 98%;
+  */background-size: 100% 98%;
   -webkit-border-radius: 0 0 0 2px;
   border-radius: 0 0 0 2px;
   -webkit-mask-image: -webkit-linear-gradient(45deg, black, black 15px, rgba(0, 0, 0, 0) 15px);

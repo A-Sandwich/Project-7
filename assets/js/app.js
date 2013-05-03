@@ -18,6 +18,38 @@
 		var $arrayOfElapsedTimes = new Array();
 		var str = "<ul id = 'projectsList' class = 'page'>";
 		
+		$('#deleteCheck').click(function(){
+			location.href = '#deleteProjectPage';
+		});
+		["title", "rate", "description","timeStart", "elapsedTime", "timeCardDescription"]
+		$('#deleteProject').click(function(){
+			/*cat.update("projects",
+				function(row) {
+					if(row.ID == currentProject+1){
+						return true;
+					}else{
+						return false;
+					}//end if else
+				},//end function(finds row to edit);
+				function(row){
+					row.elapsedTime = [];
+					row.timeCardDescription = [];
+					row.title = "";
+					row.rate = 0;
+					row.timeCardDescription = [];
+					row.description = "";
+					return row;
+				}//end function (Makes changes);		
+			);//end update
+			cat.commit();
+			/*cat.deleteRows("projects", {ID: (currentProject+1)});
+			cat.commit();*/
+			//updateHome();
+			//counter--;
+			//alert('hi');
+			location.href = '#home';
+		});
+		
 		updateEditProject = function(){
 			cat.query("projects", function(row){
 					if(row.ID == (currentProject+1)){
@@ -102,6 +134,7 @@
 		
 		//var str = "";
 		updateHome = function(){
+			var tf = false;
 			if(counter != addedProjects || addedProjects == 0){
 				
 				if(!cat.tableExists('projects')) {	//If a table does not exist then:		
@@ -119,8 +152,16 @@
 					document.getElementById("listOfProjects").innerHTML = "";//clear out old list frome home.
 					cat.query("projects", function(row){
 						var name = row.title;
-						HTML_Line = '<li class="listElement"><a class="listElement" onclick="changeProjectPage('+counter+')" href="#project">'+name+'</a></li>';
-						str += HTML_Line;
+						if(row.title != undefined){
+							HTML_Line = '<li class="listElement"><a class="listElement" onclick="changeProjectPage('+counter+')" href="#project">'+name+'</a></li>';
+							str += HTML_Line;
+							tf = true;
+						}
+						if(tf==false){
+							document.getElementById("listOfProjects").innerHTML = "<h1>No projects have been started.</h1>";
+							temp = '<a href="#newProject"><button type="button">Start a New Project!</button></a>';
+							$('#listOfProjects').append(temp);
+						}
 						addedProjects++;
 						counter++;
 					});//end query
@@ -208,6 +249,7 @@
 			var i;
 			var tempRate;
 			var date;
+			var timeTotal = 0;
 			i=0;
 			tempCounter = 0;
 			HTML_Str = "";
@@ -220,6 +262,7 @@
 					tempDescription = row.timeCardDescription;
 					tempElapsedTime = row.elapsedTime;
 					tempRate = row.rate;
+					totalDate = "";
 					console.log('Name: '+row.title+' timeStart '+row.timeStart);
 					var seconds = new Date().getTime() / 1000;
 					if(row.timeStart == 0 || row.timeStart == undefined){
@@ -240,6 +283,7 @@
 					for(i=0;i<=(tempDescription.length);i++){
 						
 						if(tempDescription[i] != undefined && tempElapsedTime[i] != 0){
+							timeTotal += tempElapsedTime[i];
 							date = getDays(tempElapsedTime[i]);
 							HTML_Code = '<div class="blackPage"><h3>Time Worked: '+date+'. Earned: $'+(Math.round((tempRate*tempElapsedTime[i]*100))/100)+'</h3><a href="#editTimecard"><i class="icon-edit t-card edit" onclick="setTimeCardNum('+i+','+rowNumber+',true)"></i></a><a href="#deleteTimecard"><i class="icon-trash t-card trash" onclick="setTimeCardNum('+i+','+rowNumber+',false)"></i></a><br><br><h5>Description: </h5><p>'+tempDescription[i]+'</p></div>';
 							HTML_Str += HTML_Code;
@@ -251,14 +295,20 @@
 				tempCounter++;
 			});//end query
 			document.getElementById("timecards").innerHTML ="";
-			//alert('here');
-			//alert(HTML_Str);
+			document.getElementById("totals").innerHTML ="";
+			totalDate = getDays(timeTotal);
+			if(HTML_Str == ""){
+				HTML_Str += '<div class = "page"><h1>No Timecards exist yet.</h1><br></div>'
+			}
 			
 			$('#timecards').append(HTML_Str);
+			HTML_Str = '<h1 class="totalCash">Time Worked: '+totalDate+'. Earned: $'+(Math.round((tempRate*timeTotal*100))/100)+'</h1>';
 			document.getElementById("projectTitle").innerHTML = tempName;
-			
+			$('#totals').append(HTML_Str);
 			updateEditProject();
 		}
+		
+		
 		
 		$('#settings').submit(function(e){
 			var tf = true;

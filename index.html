@@ -78,6 +78,7 @@
                 <div class="scroll">
                 	<div id="clockPage" class="page">
 			        	<div class="clock"></div>
+						<div id="totals" class="totals"></div>
 						<button id="timeStartStop" type="submit" class="submit greenButton">Start</button>
 			        	
 						
@@ -154,6 +155,7 @@
 							<input type="number" name="editProjectRate" value="" placeholder="1000" id="editProjectRate" class="input" />
 							
 							<button type="submit" class="submit greenButton saveTimecard">Save Edits</button>
+							<button id = "deleteCheck" type="button"  class="button redButton saveTimecard">Delete Project</button>
 						</form>
 						
 					</div>
@@ -161,6 +163,24 @@
                 </div>
             </div>
 			
+			
+			<div id="deleteProjectPage">
+               
+                <header class="toolbar">
+                    <h1 id="projectTitle">Delete Project</h1>
+                    <a class="back" href="#Project">Project</a>
+                </header>
+                <div class="scroll">
+                	
+					<div class = "page">
+						<h1>Are you sure you want to delete this project?</h1>
+							
+						<button href="#deleteProjectPage" type="button" id="deleteProject" class="button redButton saveTimecard">Delete Project</button>
+					
+					</div>
+					
+                </div>
+            </div>
  
 			
 
