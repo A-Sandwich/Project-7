@@ -15,9 +15,47 @@
 		var $arrayOfElapsedTimes = new Array();
 		var str = "<ul id = 'projectsList' class = 'page'>";
 		
-		setTimeCardDeleteNum = function(num, projectNumber){
+		$('#editTimecard').submit(function(e){
+			var $thisEdit				= $(this);
+			var $eTD					= $thisEdit.find('#editTimecardDescription');
+			var $tW						= $thisEdit.find('#timeWorked');
+			cat.update("projects",
+				function(row) {
+					if(row.ID == currentProject+1){
+						return true;
+					}else{
+						return false;
+					}//end if else
+				},//end function(finds row to edit);
+				function(row){
+					row.elapsedTime[timeCardDeleteNum] = $tW.val();
+					row.timeCardDescription[timeCardDeleteNum] = $eTD.val();
+					return row;
+				}//end function (Makes changes);		
+			);//end update
+			cat.commit();
+			changeProjectPage(currentProject);
+			location.href = '#project';
+		});
+		
+		setTimeCardNum = function(num, projectNumber, tf){
 			timeCardDeleteNum = num;
 			currentProject = projectNumber;
+			
+			if(tf==true){
+				updateEditTimecard();
+			}//end if
+		}//end setTimeCard
+		
+		updateEditTimecard = function(){
+		
+			cat.query("projects", function(row){
+					if(row.ID == (currentProject+1)){
+						$('#editTimecardDescription').val(row.timeCardDescription[timeCardDeleteNum]);
+						$('#timeWorked').val(row.elapsedTime[timeCardDeleteNum]);
+					}//end if
+			});
+			
 		}
 		
 		//var str = "";
@@ -70,7 +108,6 @@
 			}else if(days <= 0){
 				formattedDate = getHours(remainder);
 			}
-			
 			
 			return formattedDate;
 		}
@@ -149,7 +186,7 @@
 						
 						if(tempDescription[i] != undefined && tempElapsedTime[i] != 0){
 							date = getDays(tempElapsedTime[i]);
-							HTML_Code = '<div class="blackPage"><h3>Time Worked: '+date+'. Earned: $'+(Math.round((tempRate*tempElapsedTime[i]*100))/100)+'</h3><i class="icon-edit t-card edit"></i><a href="#deleteTimecard"><i class="icon-trash t-card trash" onclick="setTimeCardDeleteNum('+i+','+rowNumber+')"></i></a><br><br><h5>Description: </h5><p>'+tempDescription[i]+'</p></div>';
+							HTML_Code = '<div class="blackPage"><h3>Time Worked: '+date+'. Earned: $'+(Math.round((tempRate*tempElapsedTime[i]*100))/100)+'</h3><a href="#editTimecard"><i class="icon-edit t-card edit" onclick="setTimeCardNum('+i+','+rowNumber+',true)"></i></a><a href="#deleteTimecard"><i class="icon-trash t-card trash" onclick="setTimeCardNum('+i+','+rowNumber+',false)"></i></a><br><br><h5>Description: </h5><p>'+tempDescription[i]+'</p></div>';
 							HTML_Str += HTML_Code;
 						}
 						
@@ -297,7 +334,7 @@
 					}//end if else
 				},//end function(finds row to edit);
 				function(row){
-					row.elapsedTime[timeCardDeleteNum] = 0
+					row.elapsedTime[timeCardDeleteNum] = 0;
 					row.timeCardDescription[timeCardDeleteNum] = "";
 					return row;
 				}//end function (Makes changes);		
