@@ -11,6 +11,26 @@ h3{
 	float: left;
 }
 
+.button.slideup{
+	background: black;
+}
+
+a{
+}
+
+label{
+	
+}
+#home, #project{
+	background: url('Textures/escheresque_ste.png');
+}
+
+
+header.toolbar{
+	background: url('Textures/binding_dark.png');
+	/*background: white;*/
+}
+
 .x{
 	
 	float:right;
@@ -24,6 +44,7 @@ h3{
 .t-card{
 	float: right;
 }
+
 
 .t-card:hover{
 	opacity: 0.5;

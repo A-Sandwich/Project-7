@@ -1,8 +1,11 @@
 ;(function($, window) {
 	$(document).ready(function(){
 		var currentProject = null;
-		var clock = $('.clock').FlipClock(3600);
+		var clock = $('.clock').FlipClock(0, {
+			autoStart: false
+		});
 		var timeCardDeleteNum;
+		var endTime;
 	
 		//var jQT;
 		var counter = 0;
@@ -48,6 +51,7 @@
 			);//end update
 			cat.commit();
 			changeProjectPage(currentProject);
+			counter++;//Must increment global counter for the UpdateHome function to work.
 			updateHome();
 			location.href = '#project';
 		});
@@ -107,6 +111,7 @@
 							temp = '<a href="#newProject"><button type="button">Start a New Project!</button></a>';
 							$('#listOfProjects').append(temp);
 				}else{
+					
 					counter = 0;
 					addedProjects =0;
 					str = "<ul id = 'projectsList' class = 'page'>";
@@ -216,11 +221,19 @@
 					tempElapsedTime = row.elapsedTime;
 					tempRate = row.rate;
 					console.log('Name: '+row.title+' timeStart '+row.timeStart);
+					var seconds = new Date().getTime() / 1000;
 					if(row.timeStart == 0 || row.timeStart == undefined){
+						clock.stop();
+						clock.setTime(0);
 						document.getElementById("timeStartStop").innerHTML = "Start";
 					}else{
+						
 						document.getElementById("timeStartStop").innerHTML = "Stop";
+						elapsedTime = seconds - row.timeStart;
+						clock.setTime(elapsedTime);
+						clock.start();
 					}
+					
 					
 					tempRate = tempRate/3600;//rate i $ per second.
 					
@@ -289,6 +302,7 @@
 			
 			if(buttonText == "Start"){
 				document.getElementById("timeStartStop").innerHTML = "Stop";
+				clock.start();
 				var seconds = new Date().getTime() / 1000;
 				var elapsedTime;
 				var timeStart;
@@ -313,7 +327,9 @@
 			}else{
 				
 				$(".page.timecard").slideToggle("slow");
-			
+				var seconds = new Date().getTime() / 1000;
+				endTime = seconds;
+				clock.stop();
 				document.getElementById("timeStartStop").innerHTML = "Start";
 			}
 			
@@ -337,9 +353,9 @@
 						$tempDescriptionArray = row.timeCardDescription;
 					}//end if
 			});//end query Sets function variables = to row being edited;
-			var seconds = new Date().getTime() / 1000;
+			//var seconds = new Date().getTime() / 1000;
 			
-			elapsedTime = seconds-timeStart;
+			elapsedTime = endTime-timeStart;
 			$tempElapsedArray.push(elapsedTime);
 			$tempDescriptionArray.push($timecardDescription.val());
 			
