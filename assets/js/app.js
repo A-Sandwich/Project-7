@@ -1,6 +1,6 @@
 ;(function($, window) {
 	$(document).ready(function(){
-		var currentProject = null;
+		var currentProject = 0;
 		var clock = $('.clock').FlipClock(0, {
 			autoStart: false
 		});
@@ -241,7 +241,7 @@
 		
 		changeProjectPage = function(rowNumber){
 			tempCounter = 0;
-			currentProject = rowNumber;
+			//currentProject = rowNumber;
 			var HTML_Str;
 			var HTML_Code;
 			var tempDescription = [];
@@ -254,10 +254,14 @@
 			tempCounter = 0;
 			HTML_Str = "";
 			//alert(rowNumber);
-			
+			currentProject = rowNumber;
 			
 			cat.query("projects", function(row){
-				if(tempCounter==rowNumber){
+				//id = row.ID;
+				//if(tempCounter==rowNumber){
+				
+				if(row.ID == (rowNumber+1)){
+					//alert('row: '+row.ID+' rowNumber '+(rowNumber+1));
 					tempName = row.title;
 					tempDescription = row.timeCardDescription;
 					tempElapsedTime = row.elapsedTime;
@@ -276,17 +280,21 @@
 						clock.setTime(elapsedTime);
 						clock.start();
 					}
-					
-					
+					length = tempDescription.length;
+					HTML_Code = "";
+					HTML_Str = "";
 					tempRate = tempRate/3600;//rate i $ per second.
-					
-					for(i=0;i<=(tempDescription.length);i++){
+					//rowNumber = row.ID;
+					for(i=0;i<=length;i++){
 						
-						if(tempDescription[i] != undefined && tempElapsedTime[i] != 0){
+						if(tempDescription[i] != undefined && tempElapsedTime[i] != 0 &&i>0&& length>0 && row.ID == (rowNumber+1)){
+							//alert('rowNumber '+(rowNumber+1)+' rowID '+row.ID);
 							timeTotal += tempElapsedTime[i];
 							date = getDays(tempElapsedTime[i]);
+							//alert('row.title: '+row.title+'row.ID == '+row.ID+' tempDescription['+i+']: '+tempDescription[i]+' == row.timeCardDescription['+i+']: '+row.timeCardDescription[i]+', tempElapsedTime['+i+']: '+tempElapsedTime[i]+' == row.elapsedTime['+i+']: '+row.elapsedTime[i]);
 							HTML_Code = '<div class="blackPage"><h3>Time Worked: '+date+'. Earned: $'+(Math.round((tempRate*tempElapsedTime[i]*100))/100)+'</h3><a href="#editTimecard"><i class="icon-edit t-card edit" onclick="setTimeCardNum('+i+','+rowNumber+',true)"></i></a><a href="#deleteTimecard"><i class="icon-trash t-card trash" onclick="setTimeCardNum('+i+','+rowNumber+',false)"></i></a><br><br><h5>Description: </h5><p>'+tempDescription[i]+'</p></div>';
 							HTML_Str += HTML_Code;
+							//alert(HTML_Str);
 						}
 						
 						//alert(tempDescription[i]);
@@ -331,12 +339,16 @@
 				tf = false;
 			}
 			
+			$tempElapsedArray = [];
+			$tempElapsedArray.push(0);
+			$tempDescriptionArray = [];
+			$tempDescriptionArray.push(" ");
 			
 		
 			e.preventDefault();
 			if(tf == true){
 				
-				cat.insert("projects", {title: $projectName.val(), rate: $projectRate.val(), description: $projectDescription.val(), timeStart: 0, elapsedTime: $arrayOfElapsedTimes, timeCardDescription: $arrayOfDescriptions});
+				cat.insert("projects", {title: $projectName.val(), rate: $projectRate.val(), description: $projectDescription.val(), timeStart: 0, elapsedTime: $tempElapsedArray, timeCardDescription: $tempDescriptionArray});
 				cat.commit();
 				counter++;
 				$('#name').val('');
@@ -401,6 +413,7 @@
 						$tempDescriptionArray = [];
 						$tempElapsedArray = row.elapsedTime;
 						$tempDescriptionArray = row.timeCardDescription;
+						//alert('row.ID == '+row.ID+' tempDescription: '+$tempDescriptionArray[0
 					}//end if
 			});//end query Sets function variables = to row being edited;
 			//var seconds = new Date().getTime() / 1000;
@@ -409,6 +422,9 @@
 			$tempElapsedArray.push(elapsedTime);
 			$tempDescriptionArray.push($timecardDescription.val());
 			
+			//alert($tempDescriptionArray.pop());
+			
+			//$tempDescriptionArray.push($timecardDescription.val());
 			cat.update("projects",
 				function(row) {
 					if(row.ID == (currentProject+1)){
